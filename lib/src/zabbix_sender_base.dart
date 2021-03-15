@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:hprose/io.dart';
+import 'byte_stream.dart';
 
 class Datum {
-  String host;
-  String key;
-  double value;
+  String? host;
+  String? key;
+  double? value;
 
   Datum({
     this.host,
@@ -28,8 +28,8 @@ class Datum {
 }
 
 class ZabbixSender {
-  String request;
-  List<Datum> data;
+  String? request;
+  List<Datum>? data;
 
   ZabbixSender({
     this.request = 'sender data',
@@ -45,7 +45,7 @@ class ZabbixSender {
   String get toJsonString => jsonEncode(toJson());
 
   void addItem(String host, String key, double value) {
-    data.add(
+    data!.add(
       Datum(
         host: host,
         value: value,
@@ -55,8 +55,8 @@ class ZabbixSender {
   }
 
   Future<void> sendData({
-    String host,
-    int port,
+    String? host,
+    required int port,
   }) async {
     var socket = await Socket.connect(host, port);
     var header = ByteStream(5 + 4 + 4);
@@ -67,22 +67,22 @@ class ZabbixSender {
     header.writeAsciiString('\x00\x00\x00\x00');
     socket.add([...header.bytes, ...payload.bytes]);
     await socket.close();
-    data.clear();
+    data!.clear();
   }
 
   Map<String, dynamic> toJson() => {
         'request': request,
-        'data': List<dynamic>.from(data.map((x) => x.toJson())),
+        'data': List<dynamic>.from(data!.map((x) => x.toJson())),
       };
 
   static Future<bool> registerHost({
-    String host,
-    int port,
-    String hostClient,
-    String hostMetadata,
+    String? host,
+    required int port,
+    String? hostClient,
+    String? hostMetadata,
   }) async {
     try {
-      var data = <String, String>{
+      var data = <String, String?>{
         'request': 'active checks',
         'host': hostClient,
         'host_metadata': hostMetadata

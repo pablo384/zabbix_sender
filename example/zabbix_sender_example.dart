@@ -1,4 +1,4 @@
-import 'package:zabbix_sender/zabbix_sender.dart';
+// import 'package:zabbix_sender/zabbix_sender.dart';
 
 void main() {
   // var awesome = Awesome();
