@@ -58,16 +58,21 @@ class ZabbixSender {
     String? host,
     required int port,
   }) async {
-    var socket = await Socket.connect(host, port);
-    var header = ByteStream(5 + 4 + 4);
-    var payload = ByteStream();
-    payload.writeAsciiString(toJsonString);
-    header.writeAsciiString('ZBXD\x01');
-    header.writeInt32LE(payload.length);
-    header.writeAsciiString('\x00\x00\x00\x00');
-    socket.add([...header.bytes, ...payload.bytes]);
-    await socket.close();
-    data!.clear();
+    try {
+      var socket = await Socket.connect(host, port);
+      var header = ByteStream(5 + 4 + 4);
+      var payload = ByteStream();
+      payload.writeAsciiString(toJsonString);
+      header.writeAsciiString('ZBXD\x01');
+      header.writeInt32LE(payload.length);
+      header.writeAsciiString('\x00\x00\x00\x00');
+      socket.add([...header.bytes, ...payload.bytes]);
+      await socket.close();
+      data!.clear();
+    } catch (e, i) {
+      print(e.toString());
+      print(i.toString());
+    }
   }
 
   Map<String, dynamic> toJson() => {
